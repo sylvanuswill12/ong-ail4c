@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — ONG-AIL4C</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
   :root{
     --forest:#16412F; --gold:#D9A62E; --clay:#A6472A; --sand:#F6F1E4;
@@ -53,6 +54,10 @@
   .img-grid .img-slot{border:1px solid var(--line); border-radius:6px; padding:8px; text-align:center; background:#fdfcf9;}
   .img-grid input[type=file]{font-size:.68rem; width:100%;}
   .hint{font-size:.75rem; opacity:.6; margin-top:2px;}
+  .dl-btn{display:inline-block; margin-top:6px; background:var(--forest); color:#fff; text-decoration:none; font-size:.7rem; padding:5px 8px; border-radius:5px; text-align:center;}
+  .dl-all-btn{background:var(--gold); color:var(--forest); border:none; padding:9px 14px; border-radius:6px; font-size:.82rem; font-weight:700; cursor:pointer; margin-bottom:12px;}
+  .usage-tag{font-size:.65rem; opacity:.65; margin-top:4px; line-height:1.3;}
+  .usage-tag.unused{color:var(--clay);}
   .toast-save{position:fixed; bottom:20px; right:20px; background:var(--forest); color:#fff; padding:12px 18px; border-radius:8px; font-size:.85rem; opacity:0; transform:translateY(10px); transition:.25s; pointer-events:none;}
   .toast-save.show{opacity:1; transform:translateY(0);}
 </style>
@@ -328,12 +333,22 @@ function renderEditor(){
 
   // IMAGES / MEDIATHEQUE
   editor.appendChild(panel('Médiathèque (toutes les images)', body => {
-    body.appendChild(el('p', {class:'hint', text:'Remplacez une image existante en important un nouveau fichier au même endroit. Vous pouvez aussi ajouter une nouvelle image pour l\'utiliser ensuite dans un projet, une actualité ou la galerie.'}));
+    body.appendChild(el('p', {class:'hint', text:'Chaque photo indique où elle est utilisée sur le site. Pour déplacer une photo mal placée, allez dans la section concernée (ex. Projets, Galerie) et changez le menu déroulant \u00abPhoto\u00bb pour choisir la bonne image \u2014 pas besoin de la réimporter.'}));
+    body.appendChild(el('button', {class:'dl-all-btn', text:'\u2b07 Télécharger toutes les photos (.zip)', onclick: downloadAllImages}));
+    const usage = computeImageUsage();
     const grid = el('div', {class:'img-grid'});
     Object.keys(data.images).forEach(key => {
       const slot = el('div', {class:'img-slot'});
       slot.appendChild(el('img', {class:'thumb', src:data.images[key]}));
       slot.appendChild(el('div', {class:'img-key', text:key}));
+      const uses = usage[key] || [];
+      if(uses.length){
+        slot.appendChild(el('div', {class:'usage-tag', text:'Utilisée : ' + uses.join(', ')}));
+      } else {
+        slot.appendChild(el('div', {class:'usage-tag unused', text:'Non utilisée actuellement'}));
+      }
+      const dl = el('a', {class:'dl-btn', text:'\u2b07 Télécharger', href:data.images[key], download: key + '.' + extFromDataUri(data.images[key])});
+      slot.appendChild(dl);
       const fileInput = el('input', {type:'file', accept:'image/*'});
       fileInput.addEventListener('change', () => handleFileReplace(fileInput, key));
       slot.appendChild(fileInput);
@@ -361,6 +376,45 @@ function renderEditor(){
     });
     body.appendChild(addWrap);
   }));
+}
+
+function downloadAllImages(){
+  if(typeof JSZip === 'undefined'){
+    alert('Le téléchargement groupé nécessite une connexion internet active (chargement d\'un composant en ligne). Réessayez, ou téléchargez les photos une par une.');
+    return;
+  }
+  const zip = new JSZip();
+  Object.keys(data.images).forEach(key => {
+    const datauri = data.images[key];
+    const b64 = datauri.split(',')[1];
+    zip.file(key + '.' + extFromDataUri(datauri), b64, {base64:true});
+  });
+  zip.generateAsync({type:'blob'}).then(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'photos-ONG-AIL4C.zip';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
+function computeImageUsage(){
+  const usage = {};
+  Object.keys(data.images).forEach(k => usage[k] = []);
+  const use = (key, label) => { if(key && usage[key]) usage[key].push(label); };
+  use(data.hero.heroImage, 'Accueil (photo principale)');
+  use(data.about.image, 'À propos');
+  data.projects.forEach((p,i) => use(p.image, `Projet #${i+1} — ${p.title||'sans titre'}`));
+  data.news.forEach((n,i) => use(n.image, `Actualité #${i+1} — ${n.title||'sans titre'}`));
+  data.gallery.forEach((g,i) => use(g.image, `Galerie #${i+1} — ${g.caption||'sans légende'}`));
+  if(data.images.logo) usage.logo = usage.logo || [];
+  return usage;
+}
+
+function extFromDataUri(datauri){
+  const m = /^data:image\/(\w+);/.exec(datauri);
+  const type = m ? m[1] : 'jpeg';
+  return type === 'jpeg' ? 'jpg' : type;
 }
 
 function rmBtn(onClick){
