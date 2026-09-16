@@ -39,7 +39,7 @@
   .panel-body{padding:16px;}
 
   label{display:block; font-size:.78rem; font-weight:600; margin:10px 0 4px;}
-  input[type=text], input[type=email], input[type=file], textarea, select{
+  input[type=text], input[type=email], textarea, select{
     width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:6px; font-size:.9rem; font-family:inherit;
   }
   textarea{resize:vertical; min-height:60px;}
@@ -111,7 +111,6 @@ let data = null;
 function boot(){
   fetch('content.json?v=' + Date.now()).then(r => r.json()).then(json => {
     data = json;
-    ensureJAAConfig();
     renderEditor();
     updatePreview();
   }).catch(err => {
@@ -169,104 +168,9 @@ function imageSelect(labelText, currentKey, onChange){
   return wrap;
 }
 
-function ensureJAAConfig(){
-  if(!data.jaa) data.jaa = {};
-  const j = data.jaa;
-  if(typeof j.enabled !== 'boolean') j.enabled = true;
-  if(!j.flashAriaLabel) j.flashAriaLabel = 'Flash info — appel à candidature JAA';
-  if(!j.flashLabel) j.flashLabel = 'FLASH INFO';
-  if(!Array.isArray(j.flashMessages) || !j.flashMessages.length) j.flashMessages = [
-    'APPEL À CANDIDATURE',
-    'Le projet Jeunesse Africaine en Action (JAA) est en cours.',
-    "ONG-AIL4C recherche des jeunes candidats pour rejoindre l'équipe de pré-réflexion.",
-    'Date limite : 02 octobre 2026.'
-  ];
-  if(!j.flashButtonLabel) j.flashButtonLabel = 'Aller au TDR';
-  if(!j.flashButtonUrl) j.flashButtonUrl = '#jaa-tdr';
-  if(typeof j.tdrEnabled !== 'boolean') j.tdrEnabled = true;
-  if(!j.tdrTitle) j.tdrTitle = 'Projet Jeunesse Africaine en Action (JAA)';
-  if(!j.tdrIntro) j.tdrIntro = "ONG-AIL4C recherche des jeunes candidats pour rejoindre l'équipe de pré-réflexion du projet JAA. Consultez les Termes de Référence avant de postuler.";
-  if(!j.tdrFormButtonLabel) j.tdrFormButtonLabel = 'Postuler en ligne';
-  if(!j.formUrl) j.formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSclv5CvDV1KwAAD9DVQW74eeeT9Dd5H7VeUL9EUY6a0_ZQfXQ/viewform?usp=header';
-  if(!j.tdrPdfButtonLabel) j.tdrPdfButtonLabel = 'Télécharger le TDR (PDF)';
-  if(!j.pdfFileName) j.pdfFileName = 'TDR_Recrutement_Equipe_Pre-Reflexion_JAA.pdf';
-  if(!j.deadlineLabel) j.deadlineLabel = 'Date limite de candidature';
-  if(!j.deadline) j.deadline = '02 octobre 2026';
-}
-
-function pdfField(labelText, currentData, currentName, onFile){
-  const wrap = el('div');
-  wrap.appendChild(el('label', {text:labelText}));
-  const input = el('input', {type:'file', accept:'application/pdf,.pdf'});
-  input.addEventListener('change', () => {
-    const file = input.files[0];
-    if(!file) return;
-    if(file.type && file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){
-      alert('Veuillez sélectionner un fichier PDF.'); input.value=''; return;
-    }
-    if(file.size > 8 * 1024 * 1024){
-      alert('Le PDF dépasse 8 Mo. Choisissez un fichier plus léger.'); input.value=''; return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => { onFile(reader.result, file.name); scheduleUpdate(); renderEditor(); };
-    reader.readAsDataURL(file);
-  });
-  wrap.appendChild(input);
-  if(currentData){
-    const a = el('a', {class:'dl-btn', href:currentData, target:'_blank', rel:'noopener', download:currentName || 'TDR-JAA.pdf', text:'↗ Ouvrir le PDF actuel'});
-    wrap.appendChild(a);
-  }
-  return wrap;
-}
-
 function renderEditor(){
   const editor = document.getElementById('editor');
   editor.innerHTML = '';
-
-  // JAA — FLASH INFO & CANDIDATURE
-  editor.appendChild(panel('JAA — Flash Info & candidature', body => {
-    const toggle = el('label');
-    const cb = el('input', {type:'checkbox'}); cb.checked = data.jaa.enabled !== false;
-    cb.addEventListener('change', () => { data.jaa.enabled = cb.checked; scheduleUpdate(); });
-    toggle.appendChild(cb); toggle.appendChild(document.createTextNode(' Afficher le Flash Info sur le site'));
-    body.appendChild(toggle);
-
-    body.appendChild(field('Libellé du Flash Info', data.jaa.flashLabel, v => data.jaa.flashLabel = v));
-    body.appendChild(field('Description accessible', data.jaa.flashAriaLabel, v => data.jaa.flashAriaLabel = v));
-
-    body.appendChild(el('label', {text:'Messages défilants'}));
-    data.jaa.flashMessages.forEach((m,i) => {
-      const card = el('div', {class:'item-card'});
-      card.appendChild(rmBtn(() => { data.jaa.flashMessages.splice(i,1); renderEditor(); scheduleUpdate(); }));
-      card.appendChild(field('Message '+(i+1), m, v => data.jaa.flashMessages[i] = v, true));
-      body.appendChild(card);
-    });
-    body.appendChild(el('button', {class:'add-btn', text:'+ Ajouter un message au Flash Info', onclick: () => {
-      data.jaa.flashMessages.push('Nouveau message'); renderEditor(); scheduleUpdate();
-    }}));
-
-    body.appendChild(field('Texte du bouton', data.jaa.flashButtonLabel, v => data.jaa.flashButtonLabel = v));
-    body.appendChild(field('Lien du bouton', data.jaa.flashButtonUrl, v => data.jaa.flashButtonUrl = v));
-
-    const sep = el('div', {style:'height:1px;background:var(--line);margin:18px 0;'}); body.appendChild(sep);
-    const t = el('label'); const tcb = el('input', {type:'checkbox'}); tcb.checked = data.jaa.tdrEnabled !== false;
-    tcb.addEventListener('change', () => { data.jaa.tdrEnabled = tcb.checked; scheduleUpdate(); });
-    t.appendChild(tcb); t.appendChild(document.createTextNode(' Afficher le bloc TDR / candidature'));
-    body.appendChild(t);
-
-    body.appendChild(field('Titre du TDR', data.jaa.tdrTitle, v => data.jaa.tdrTitle = v));
-    body.appendChild(field('Texte de présentation', data.jaa.tdrIntro, v => data.jaa.tdrIntro = v, true));
-    body.appendChild(field('Texte du bouton de candidature', data.jaa.tdrFormButtonLabel, v => data.jaa.tdrFormButtonLabel = v));
-    body.appendChild(field('Lien Google Form', data.jaa.formUrl, v => data.jaa.formUrl = v));
-    body.appendChild(field('Texte du bouton PDF', data.jaa.tdrPdfButtonLabel, v => data.jaa.tdrPdfButtonLabel = v));
-    body.appendChild(field('Nom du fichier PDF', data.jaa.pdfFileName, v => data.jaa.pdfFileName = v));
-    body.appendChild(pdfField('Remplacer le PDF du TDR', data.jaa.pdfData, data.jaa.pdfFileName, (uri,name) => { data.jaa.pdfData = uri; data.jaa.pdfFileName = name; }));
-    body.appendChild(field('Libellé de la date limite', data.jaa.deadlineLabel, v => data.jaa.deadlineLabel = v));
-    body.appendChild(field('Date limite', data.jaa.deadline, v => data.jaa.deadline = v));
-
-    const note = el('p', {class:'hint', text:'Toutes ces modifications sont enregistrées dans content.json lorsque vous cliquez sur « Télécharger content.json ». Remplacez ensuite content.json sur GitHub/Netlify pour publier.'});
-    body.appendChild(note);
-  }));
 
   // HERO
   editor.appendChild(panel('Accueil (hero)', body => {
@@ -409,6 +313,67 @@ function renderEditor(){
     body.appendChild(el('button', {class:'add-btn', text:'+ Ajouter une option de don', onclick: () => {
       data.give.options.push({title:'', text:''}); renderEditor(); scheduleUpdate();
     }}));
+  }));
+
+  // JAA — FLASH INFO & CANDIDATURE
+  editor.appendChild(panel('JAA — Flash Info & candidature', body => {
+    const enabledWrap = el('div');
+    enabledWrap.appendChild(el('label', {text:'Afficher le Flash Info JAA'}));
+    const enabled = el('input', {type:'checkbox'});
+    enabled.checked = data.jaa.enabled !== false;
+    enabled.addEventListener('change', () => { data.jaa.enabled = enabled.checked; scheduleUpdate(); });
+    enabledWrap.appendChild(enabled);
+    body.appendChild(enabledWrap);
+
+    body.appendChild(field('Libellé du Flash Info', data.jaa.flashLabel, v => data.jaa.flashLabel = v));
+    body.appendChild(field('Texte alternatif du Flash Info', data.jaa.flashAriaLabel, v => data.jaa.flashAriaLabel = v));
+
+    const msgTitle = el('label', {text:'Messages défilants'});
+    body.appendChild(msgTitle);
+    (data.jaa.flashMessages || []).forEach((m,i) => {
+      const card = el('div', {class:'item-card'});
+      card.appendChild(rmBtn(() => { data.jaa.flashMessages.splice(i,1); renderEditor(); scheduleUpdate(); }));
+      card.appendChild(field('Message ' + (i+1), m, v => data.jaa.flashMessages[i] = v));
+      body.appendChild(card);
+    });
+    body.appendChild(el('button', {class:'add-btn', text:'+ Ajouter un message', onclick: () => {
+      data.jaa.flashMessages.push('Nouveau message'); renderEditor(); scheduleUpdate();
+    }}));
+
+    body.appendChild(field('Texte du bouton Flash Info', data.jaa.flashButtonLabel, v => data.jaa.flashButtonLabel = v));
+    body.appendChild(field('Lien du bouton Flash Info', data.jaa.flashButtonUrl, v => data.jaa.flashButtonUrl = v));
+
+    const sep = el('hr', {style:'border:none;border-top:1px solid var(--line);margin:18px 0;'});
+    body.appendChild(sep);
+    body.appendChild(el('h3', {text:'Bloc candidature en bas du TDR', style:'margin:0 0 8px;font-size:1rem;'}));
+    body.appendChild(field('Petit titre', data.jaa.applicationEyebrow, v => data.jaa.applicationEyebrow = v));
+    body.appendChild(field('Titre du bloc', data.jaa.applicationTitle, v => data.jaa.applicationTitle = v, true));
+    body.appendChild(field('Texte du bloc', data.jaa.applicationText, v => data.jaa.applicationText = v, true));
+    body.appendChild(field('Texte du bouton de candidature', data.jaa.formButtonLabel, v => data.jaa.formButtonLabel = v));
+    body.appendChild(field('Lien Google Form', data.jaa.formUrl, v => data.jaa.formUrl = v));
+    body.appendChild(field('Texte du bouton PDF', data.jaa.pdfButtonLabel, v => data.jaa.pdfButtonLabel = v));
+    body.appendChild(field('Lien / chemin du PDF', data.jaa.pdfUrl, v => { data.jaa.pdfUrl = v; data.jaa.pdfData = ''; }));
+
+    const pdfWrap = el('div');
+    pdfWrap.appendChild(el('label', {text:'Remplacer le PDF du TDR'}));
+    pdfWrap.appendChild(el('p', {class:'hint', text:'Importez un nouveau PDF ici. Il sera intégré dans content.json et utilisé par le bouton de téléchargement.'}));
+    const pdfInput = el('input', {type:'file', accept:'application/pdf'});
+    pdfInput.addEventListener('change', () => {
+      const file = pdfInput.files[0];
+      if(!file) return;
+      if(file.type !== 'application/pdf'){ alert('Veuillez sélectionner un fichier PDF.'); return; }
+      const reader = new FileReader();
+      reader.onload = () => { data.jaa.pdfData = reader.result; data.jaa.pdfUrl = 'TDR_Recrutement_Equipe_Pre-Reflexion_JAA.pdf'; renderEditor(); scheduleUpdate(); };
+      reader.readAsDataURL(file);
+    });
+    pdfWrap.appendChild(pdfInput);
+    if(data.jaa.pdfData){
+      pdfWrap.appendChild(el('p', {class:'hint', text:'✓ Un PDF est actuellement intégré à content.json.'}));
+    }
+    body.appendChild(pdfWrap);
+
+    body.appendChild(field('Libellé de la date limite', data.jaa.deadlineLabel, v => data.jaa.deadlineLabel = v));
+    body.appendChild(field('Date limite affichée', data.jaa.deadline, v => data.jaa.deadline = v));
   }));
 
   // CONTACT
