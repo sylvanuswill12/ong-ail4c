@@ -27,17 +27,11 @@ window.AIL4C = (function(){
 
   function renderApp(data){
     const d = data;
-    // Valeurs de secours : le Flash Info JAA reste visible même si un ancien
-    // content.json ne contient pas encore la rubrique jaa.
     const jaa = d.jaa || {};
     const flashMessages = Array.isArray(jaa.flashMessages) && jaa.flashMessages.length
       ? jaa.flashMessages
-      : [
-          'APPEL À CANDIDATURE',
-          'Le projet Jeunesse Africaine en Action (JAA) est en cours.',
-          "ONG-AIL4C recherche des jeunes candidats pour rejoindre l'équipe de pré-réflexion.",
-          'Date limite : 02 octobre 2026.'
-        ];
+      : ['APPEL À CANDIDATURE', 'Le projet Jeunesse Africaine en Action (JAA) est en cours.', "ONG-AIL4C recherche des jeunes candidats pour rejoindre l'équipe de pré-réflexion."];
+    const pdfHref = jaa.pdfData || jaa.pdfUrl || '';
     return `
 <div class="scrim" id="scrim"></div>
 
@@ -50,21 +44,19 @@ window.AIL4C = (function(){
 </header>
 
 ${jaa.enabled !== false ? `
-<section class="jaa-announcement" aria-label="${esc(jaa.flashAriaLabel || 'Flash info — appel à candidature JAA')}">
-  <div class="jaa-flash-inner">
-    <div class="jaa-flash-label">${esc(jaa.flashLabel || 'FLASH INFO')}</div>
-    <div class="jaa-flash-track" aria-live="polite">
-      <div class="jaa-flash-marquee">
-        <div class="jaa-flash-group">
-          ${flashMessages.map(m => `<span>${esc(m)}</span>`).join('')}
-        </div>
-        <div class="jaa-flash-group" aria-hidden="true">
-          ${flashMessages.map(m => `<span>${esc(m)}</span>`).join('')}
-        </div>
+<section class="jaa-flash" aria-label="${esc(jaa.flashAriaLabel || 'Flash info JAA')}">
+  <div class="jaa-flash-label">${esc(jaa.flashLabel || 'FLASH INFO')}</div>
+  <div class="jaa-flash-track">
+    <div class="jaa-flash-marquee">
+      <div class="jaa-flash-group">
+        ${flashMessages.map(m => `<span>${esc(m)}</span>`).join('')}
+      </div>
+      <div class="jaa-flash-group" aria-hidden="true">
+        ${flashMessages.map(m => `<span>${esc(m)}</span>`).join('')}
       </div>
     </div>
-    <a href="${esc(jaa.flashButtonUrl || '#jaa-tdr')}" class="jaa-flash-btn">${esc(jaa.flashButtonLabel || 'Aller au TDR')} <span aria-hidden="true">→</span></a>
   </div>
+  <a class="jaa-flash-btn" href="${esc(jaa.flashButtonUrl || '#jaa-tdr')}">${esc(jaa.flashButtonLabel || 'Aller au TDR')} <span>→</span></a>
 </section>` : ''}
 
 <nav class="sidenav" id="sidenav" aria-label="Navigation principale">
@@ -80,9 +72,8 @@ ${jaa.enabled !== false ? `
   <a href="#galerie" class="nav-link"><span class="n">06</span> Galerie</a>
   <a href="#partenaires" class="nav-link"><span class="n">07</span> Partenaires</a>
   <a href="#don" class="nav-link"><span class="n">08</span> Faire un don</a>
-  <a href="#jaa-tdr" class="nav-link"><span class="n">09</span> JAA — TDR &amp; candidature</a>
-  <a href="#benevolat" class="nav-link"><span class="n">10</span> Devenir bénévole</a>
-  <a href="#contact" class="nav-link"><span class="n">11</span> Contact</a>
+  <a href="#benevolat" class="nav-link"><span class="n">09</span> Devenir bénévole</a>
+  <a href="#contact" class="nav-link"><span class="n">10</span> Contact</a>
   <a href="#don" class="cta nav-link">Soutenir AIL4C</a>
 </nav>
 
@@ -102,6 +93,24 @@ ${jaa.enabled !== false ? `
   </div>
   <img class="hero-photo" src="${img(d,d.hero.heroImage)}" alt="Équipe de bénévoles ONG-AIL4C sur le terrain">
 </section>
+
+${jaa.tdrEnabled !== false ? `
+<section class="jaa-tdr section" id="jaa-tdr">
+  <div class="wrap">
+    <div class="jaa-tdr-card">
+      <div class="jaa-tdr-copy">
+        <p class="eyebrow">Projet JAA</p>
+        <h2>${esc(jaa.tdrTitle || 'Projet Jeunesse Africaine en Action (JAA)')}</h2>
+        <p>${esc(jaa.tdrIntro || '')}</p>
+        ${jaa.deadline ? `<p class="jaa-deadline"><strong>${esc(jaa.deadlineLabel || 'Date limite')}</strong> ${esc(jaa.deadline)}</p>` : ''}
+        <div class="jaa-tdr-actions">
+          ${pdfHref ? `<a class="btn btn-outline-dark" href="${esc(pdfHref)}" target="_blank" rel="noopener" download="${esc(jaa.pdfFileName || 'TDR-JAA.pdf')}">${esc(jaa.tdrPdfButtonLabel || 'Télécharger le TDR (PDF)')}</a>` : ''}
+          ${jaa.formUrl ? `<a class="btn btn-gold" href="${esc(jaa.formUrl)}" target="_blank" rel="noopener">${esc(jaa.tdrFormButtonLabel || 'Postuler en ligne')} →</a>` : ''}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>` : ''}
 
 <div class="kita"></div>
 
@@ -226,143 +235,6 @@ ${jaa.enabled !== false ? `
   </div>
 </section>
 
-<section class="section section-alt" id="jaa-tdr">
-  <div class="wrap">
-    <p class="eyebrow">Projet Jeunesse Africaine en Action (JAA)</p>
-    <div class="tdr-header">
-      <div>
-        <h2>Termes de référence (TDR)</h2>
-        <p class="lede">Recrutement de l'équipe de pré-réflexion JAA</p>
-      </div>
-      <div class="tdr-badge">ONG AIL4C<br><span>Appel à candidatures</span></div>
-    </div>
-
-    <div class="tdr-document">
-      <div class="tdr-part">
-        <h3>1. Contexte</h3>
-        <p>L'Afrique possède aujourd'hui la population la plus jeune du monde : plus de 400 millions de personnes âgées de 15 à 35 ans, un chiffre qui devrait dépasser les 830 millions d'ici 2050 (Union Africaine, 2025). Cette jeunesse, qui représente plus de 70 % de la population totale du continent (UNESCO, 2025), se distingue par une conscience aiguë des enjeux sociaux et environnementaux ainsi que par une réelle volonté de s'engager et de contribuer au changement.</p>
-        <p>C'est face à ce constat que l'ONG AIL4C a initié le projet Jeunesse Africaine en Action (JAA), qui vise à réunir des jeunes issus de divers pays d'Afrique afin de faire mûrir, ensemble, des réflexions solides et des actions concrètes en faveur de l'émancipation de la jeunesse africaine et du renforcement de son esprit de leadership.</p>
-        <p>Avant le lancement officiel des activités, l'ONG-AIL4C souhaite constituer un petit groupe de pré-réflexion chargé de poser les bases institutionnelles du réseau JAA : relire, enrichir et valider les Statuts et le Règlement Intérieur, monter le projet JAA dans ses grandes lignes, et contribuer à la définition de la vision du réseau pour les 5 prochaines années. C'est l'objet du présent appel.</p>
-      </div>
-
-      <div class="tdr-part">
-        <h3>2. Objectif général</h3>
-        <p>Constituer une équipe restreinte de 8 à 12 personnes chargée de bâtir le socle institutionnel et stratégique du réseau JAA, afin d'en faire un grand réseau régional de la jeunesse en Afrique, connecté, structuré et tourné vers l'impact.</p>
-      </div>
-
-      <div class="tdr-part">
-        <h3>3. Objectifs spécifiques</h3>
-        <ul>
-          <li>Mettre en place une équipe de pré-réflexion pour le projet JAA</li>
-          <li>Relire, enrichir et valider les Statuts du réseau JAA</li>
-          <li>Relire, enrichir et valider le Règlement Intérieur du réseau JAA</li>
-          <li>Monter le projet JAA (structuration, gouvernance, organisation)</li>
-          <li>Contribuer à la définition de la vision du réseau pour les 5 prochaines années</li>
-        </ul>
-      </div>
-
-      <div class="tdr-part">
-        <h3>4. Résultats attendus</h3>
-        <ul>
-          <li>Une équipe de pré-réflexion de 8 à 12 personnes est mise en place</li>
-          <li>Les Statuts du réseau JAA sont relus, enrichis et validés</li>
-          <li>Le Règlement Intérieur du réseau JAA est relu, enrichi et validé</li>
-          <li>Le projet JAA est monté et prêt à être déployé</li>
-          <li>Une vision commune du réseau pour les 5 prochaines années est formulée</li>
-        </ul>
-      </div>
-
-      <div class="tdr-part">
-        <h3>5. Missions du groupe de pré-réflexion</h3>
-        <p>Les membres retenus seront invités à participer à un cycle de sessions de travail (en ligne et/ou en présentiel selon les zones) au cours desquelles ils devront :</p>
-        <ul>
-          <li>Analyser le Statut et de Règlement Intérieur du réseau JAA</li>
-          <li>Proposer des amendements et enrichissements pertinents</li>
-          <li>Participer à la validation collective des documents de gouvernance</li>
-          <li>Restituer, le cas échéant, les travaux du groupe auprès de l'ONG-AIL4C</li>
-        </ul>
-      </div>
-
-      <div class="tdr-part">
-        <h3>6. Profil recherché</h3>
-        <p>L'équipe étant pluridisciplinaire, les candidatures sont ouvertes dans les domaines d'expérience ou de compétence suivants (un ou plusieurs domaines par candidat) :</p>
-        <ul>
-          <li>Droit / associatif / gouvernance</li>
-          <li>Communication / identité de marque</li>
-          <li>Gestion de projet / coordination</li>
-          <li>Partenariats / levée de fonds</li>
-          <li>Numérique / outils digitaux</li>
-          <li>Suivi-évaluation / impact</li>
-          <li>Autre domaine pertinent pour le projet JAA</li>
-        </ul>
-        <p>Une expérience antérieure au sein d'un réseau de jeunesse (AIESEC, Global Shapers, YALI, scouts, club universitaire, etc.) constitue un atout, de même qu'une expérience dans la rédaction ou la relecture de statuts, de règlements intérieurs ou de tout autre document de gouvernance associative.</p>
-      </div>
-
-      <div class="tdr-part">
-        <h3>7. Critères d'éligibilité</h3>
-        <ul>
-          <li>Être un(e) jeune provenant d'Afrique</li>
-          <li>Être âgé(e) de 18 à 35 ans</li>
-          <li>Être disponible et motivé(e) à s'investir bénévolement sur la durée de la mission</li>
-        </ul>
-      </div>
-
-      <div class="tdr-part">
-        <h3>8. Compétences linguistiques</h3>
-        <p>Les candidats doivent maîtriser la langue française (parler et écrire). La maîtrise de la langue anglaise serait un atout.</p>
-      </div>
-
-      <div class="tdr-part">
-        <h3>9. Documents obligatoires</h3>
-        <ul>
-          <li>Curriculum Vitae</li>
-          <li>Lettre de motivation</li>
-          <li>Pièce d'identité ou passeport</li>
-        </ul>
-      </div>
-
-      <div class="tdr-part">
-        <h3>10. Processus de sélection</h3>
-        <p>Le processus de sélection se déroule comme suit :</p>
-        <ol>
-          <li>Soumission de la candidature en ligne via le formulaire dédié (durée estimée : 5 à 10 minutes)</li>
-          <li>Évaluation des dossiers par le comité d'évaluation de l'ONG-AIL4C</li>
-          <li>Validation des candidats sélectionnés</li>
-          <li>Notification aux candidats retenus</li>
-        </ol>
-      </div>
-
-      <div class="tdr-part">
-        <h3>11. Durée et engagement</h3>
-        <p>Le projet JAA est un projet à caractère bénévole. L'équipe de pré-réflexion s'engage pour une durée initiale de 3 mois, renouvelable en fonction du rendement de l'équipe et du respect des règlements établis par l'ONG-AIL4C.</p>
-      </div>
-
-      <div class="tdr-part">
-        <h3>12. Informations importantes</h3>
-        <p>Les candidats sont invités à lire attentivement l'ensemble des documents mis à leur disposition avant de soumettre leur candidature. Toute candidature ne respectant pas les consignes inscrites dans le formulaire sera automatiquement rejetée.</p>
-        <p>Seuls les candidats présélectionnés seront contactés pour la suite de la procédure.</p>
-      </div>
-
-      <div class="tdr-part">
-        <h3>13. Demande d'information et soumission de candidature</h3>
-        <p>Pour toute demande d'information complémentaire non couverte par le présent terme de référence, les candidats peuvent nous contacter aux adresses suivantes :</p>
-        <p><strong>jeunesse_africaine_en_action@outlook.fr</strong><br><strong>ail4c03@gmail.com</strong></p>
-      </div>
-    </div>
-
-    <div class="tdr-apply">
-      <p class="eyebrow">${esc(d.jaa && d.jaa.applicationEyebrow || 'Candidature')}</p>
-      <h3>${esc(d.jaa && d.jaa.applicationTitle || 'Vous avez lu le TDR et souhaitez rejoindre l’équipe de pré-réflexion JAA ?')}</h3>
-      <p>${esc(d.jaa && d.jaa.applicationText || 'Après avoir pris connaissance des présents Termes de Référence, vous pouvez choisir de télécharger le document ou de soumettre votre candidature en ligne.')}</p>
-      <div class="tdr-actions">
-        <a class="btn btn-gold" href="${esc(d.jaa && d.jaa.formUrl || '#')}" target="_blank" rel="noopener noreferrer">${esc(d.jaa && d.jaa.formButtonLabel || 'Je souhaite postuler')}</a>
-        <a class="btn btn-outline" href="${esc(d.jaa && (d.jaa.pdfData || d.jaa.pdfUrl) || 'TDR_Recrutement_Equipe_Pre-Reflexion_JAA.pdf')}" download>${esc(d.jaa && d.jaa.pdfButtonLabel || 'Télécharger le TDR (PDF)')}</a>
-      </div>
-      <div class="tdr-deadline">${esc(d.jaa && d.jaa.deadlineLabel || 'Date limite :')} <strong>${esc(d.jaa && d.jaa.deadline || '02 octobre 2026')}</strong></div>
-    </div>
-  </div>
-</section>
-
 <section class="section section-alt" id="benevolat">
   <div class="wrap">
     <p class="eyebrow">Devenir bénévole</p>
@@ -448,7 +320,6 @@ ${jaa.enabled !== false ? `
       <div>
         <h4>Agir</h4>
         <a href="#don">Faire un don</a>
-        <a href="#jaa-tdr">JAA — TDR &amp; candidature</a>
         <a href="#benevolat">Devenir bénévole</a>
         <a href="#">Mentions légales</a>
         <a href="#">Politique de confidentialité</a>
