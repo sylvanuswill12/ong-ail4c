@@ -38,16 +38,19 @@ window.AIL4C = (function(){
   <button class="menu-btn" id="menuBtn" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
 </header>
 
-<section class="jaa-announcement" aria-labelledby="jaa-announcement-title">
-  <div class="wrap jaa-announcement-inner">
-    <div>
-      <span class="jaa-announcement-label">APPEL À CANDIDATURE</span>
-      <h2 id="jaa-announcement-title">Le projet Jeunesse Africaine en Action (JAA) est en cours</h2>
-      <p>ONG-AIL4C recherche des jeunes candidats pour rejoindre l'équipe de pré-réflexion du projet JAA. Découvrez d'abord les Termes de Référence, puis postulez en ligne.</p>
+${d.jaa && d.jaa.enabled !== false ? `
+<section class="jaa-announcement" aria-label="${esc(d.jaa.flashAriaLabel || 'Flash info — appel à candidature JAA')}">
+  <div class="jaa-flash-inner">
+    <div class="jaa-flash-label">${esc(d.jaa.flashLabel || 'FLASH INFO')}</div>
+    <div class="jaa-flash-track" aria-live="polite">
+      <div class="jaa-flash-marquee">
+        ${(d.jaa.flashMessages || []).map(m => `<span>${esc(m)}</span>`).join('')}
+        ${(d.jaa.flashMessages || []).map(m => `<span aria-hidden="true">${esc(m)}</span>`).join('')}
+      </div>
     </div>
-    <a href="#jaa-tdr" class="btn btn-gold">Lire le TDR</a>
+    <a href="${esc(d.jaa.flashButtonUrl || '#jaa-tdr')}" class="jaa-flash-btn">${esc(d.jaa.flashButtonLabel || 'Aller au TDR')} <span aria-hidden="true">→</span></a>
   </div>
-</section>
+</section>` : ''}
 
 <nav class="sidenav" id="sidenav" aria-label="Navigation principale">
   <div class="sidenav-head">
@@ -333,14 +336,14 @@ window.AIL4C = (function(){
     </div>
 
     <div class="tdr-apply">
-      <p class="eyebrow">Candidature</p>
-      <h3>Vous avez lu le TDR et souhaitez rejoindre l'équipe de pré-réflexion JAA ?</h3>
-      <p>Après avoir pris connaissance des présents Termes de Référence, vous pouvez choisir de télécharger le document ou de soumettre votre candidature en ligne.</p>
+      <p class="eyebrow">${esc(d.jaa && d.jaa.applicationEyebrow || 'Candidature')}</p>
+      <h3>${esc(d.jaa && d.jaa.applicationTitle || 'Vous avez lu le TDR et souhaitez rejoindre l’équipe de pré-réflexion JAA ?')}</h3>
+      <p>${esc(d.jaa && d.jaa.applicationText || 'Après avoir pris connaissance des présents Termes de Référence, vous pouvez choisir de télécharger le document ou de soumettre votre candidature en ligne.')}</p>
       <div class="tdr-actions">
-        <a class="btn btn-gold" href="https://docs.google.com/forms/d/e/1FAIpQLSclv5CvDV1KwAAD9DVQW74eeeT9Dd5H7VeUL9EUY6a0_ZQfXQ/viewform?usp=header" target="_blank" rel="noopener noreferrer">Je souhaite postuler</a>
-        <a class="btn btn-outline" href="TDR_Recrutement_Equipe_Pre-Reflexion_JAA.pdf" download>Télécharger le TDR (PDF)</a>
+        <a class="btn btn-gold" href="${esc(d.jaa && d.jaa.formUrl || '#')}" target="_blank" rel="noopener noreferrer">${esc(d.jaa && d.jaa.formButtonLabel || 'Je souhaite postuler')}</a>
+        <a class="btn btn-outline" href="${esc(d.jaa && (d.jaa.pdfData || d.jaa.pdfUrl) || 'TDR_Recrutement_Equipe_Pre-Reflexion_JAA.pdf')}" download>${esc(d.jaa && d.jaa.pdfButtonLabel || 'Télécharger le TDR (PDF)')}</a>
       </div>
-      <div class="tdr-deadline">Date limite : <strong>02 octobre 2026</strong></div>
+      <div class="tdr-deadline">${esc(d.jaa && d.jaa.deadlineLabel || 'Date limite :')} <strong>${esc(d.jaa && d.jaa.deadline || '02 octobre 2026')}</strong></div>
     </div>
   </div>
 </section>
