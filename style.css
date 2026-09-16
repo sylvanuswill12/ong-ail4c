@@ -186,6 +186,32 @@ p{margin:0 0 16px; max-width:62ch;}
 .give-opt h4{margin:0 0 8px; font-size:.98rem; font-family:'Space Grotesk',sans-serif;}
 .give-opt p{font-size:.85rem; opacity:.8; margin:0;}
 
+/* TDR JAA */
+.tdr-header{display:flex;justify-content:space-between;gap:28px;align-items:flex-start;margin-bottom:28px;}
+.tdr-header h2{margin-bottom:8px;}
+.tdr-badge{flex:0 0 auto;background:var(--forest);color:var(--paper);padding:14px 18px;border-radius:var(--radius);font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;text-align:right;}
+.tdr-badge span{font-family:'IBM Plex Mono',monospace;font-size:.65rem;font-weight:400;letter-spacing:.02em;opacity:.75;text-transform:none;}
+.tdr-document{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:34px 36px;}
+.tdr-part{padding:0 0 28px;margin:0 0 28px;border-bottom:1px solid var(--line);}
+.tdr-part:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0;}
+.tdr-part h3{font-size:1.08rem;margin:0 0 12px;color:var(--forest);}
+.tdr-part p{font-size:.94rem;opacity:.88;max-width:none;}
+.tdr-part ul,.tdr-part ol{margin:0;padding-left:22px;max-width:78ch;}
+.tdr-part li{font-size:.92rem;margin:7px 0;padding-left:3px;}
+.tdr-apply{margin-top:28px;background:var(--forest);color:var(--paper);border-radius:8px;padding:34px 36px;text-align:center;}
+.tdr-apply .eyebrow{justify-content:center;color:var(--gold);}
+.tdr-apply .eyebrow::before{background:var(--gold);}
+.tdr-apply h3{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.25rem,2.5vw,1.7rem);margin:0 auto 10px;max-width:28ch;}
+.tdr-apply p:not(.eyebrow){margin:0 auto 20px;color:rgba(255,253,248,.82);max-width:65ch;}
+.tdr-apply .btn{margin:4px 0 18px;}
+.tdr-deadline{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--gold);}
+@media (max-width:520px){
+  .tdr-header{flex-direction:column;}
+  .tdr-badge{text-align:left;}
+  .tdr-document{padding:24px 20px;}
+  .tdr-apply{padding:28px 20px;}
+}
+
 .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
 .field{display:flex; flex-direction:column; gap:6px; margin-bottom:16px;}
 .field.full{grid-column:1/-1;}
