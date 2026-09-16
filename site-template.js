@@ -27,6 +27,17 @@ window.AIL4C = (function(){
 
   function renderApp(data){
     const d = data;
+    // Valeurs de secours : le Flash Info JAA reste visible même si un ancien
+    // content.json ne contient pas encore la rubrique jaa.
+    const jaa = d.jaa || {};
+    const flashMessages = Array.isArray(jaa.flashMessages) && jaa.flashMessages.length
+      ? jaa.flashMessages
+      : [
+          'APPEL À CANDIDATURE',
+          'Le projet Jeunesse Africaine en Action (JAA) est en cours.',
+          "ONG-AIL4C recherche des jeunes candidats pour rejoindre l'équipe de pré-réflexion.",
+          'Date limite : 02 octobre 2026.'
+        ];
     return `
 <div class="scrim" id="scrim"></div>
 
@@ -38,17 +49,21 @@ window.AIL4C = (function(){
   <button class="menu-btn" id="menuBtn" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
 </header>
 
-${d.jaa && d.jaa.enabled !== false ? `
-<section class="jaa-announcement" aria-label="${esc(d.jaa.flashAriaLabel || 'Flash info — appel à candidature JAA')}">
+${jaa.enabled !== false ? `
+<section class="jaa-announcement" aria-label="${esc(jaa.flashAriaLabel || 'Flash info — appel à candidature JAA')}">
   <div class="jaa-flash-inner">
-    <div class="jaa-flash-label">${esc(d.jaa.flashLabel || 'FLASH INFO')}</div>
+    <div class="jaa-flash-label">${esc(jaa.flashLabel || 'FLASH INFO')}</div>
     <div class="jaa-flash-track" aria-live="polite">
       <div class="jaa-flash-marquee">
-        ${(d.jaa.flashMessages || []).map(m => `<span>${esc(m)}</span>`).join('')}
-        ${(d.jaa.flashMessages || []).map(m => `<span aria-hidden="true">${esc(m)}</span>`).join('')}
+        <div class="jaa-flash-group">
+          ${flashMessages.map(m => `<span>${esc(m)}</span>`).join('')}
+        </div>
+        <div class="jaa-flash-group" aria-hidden="true">
+          ${flashMessages.map(m => `<span>${esc(m)}</span>`).join('')}
+        </div>
       </div>
     </div>
-    <a href="${esc(d.jaa.flashButtonUrl || '#jaa-tdr')}" class="jaa-flash-btn">${esc(d.jaa.flashButtonLabel || 'Aller au TDR')} <span aria-hidden="true">→</span></a>
+    <a href="${esc(jaa.flashButtonUrl || '#jaa-tdr')}" class="jaa-flash-btn">${esc(jaa.flashButtonLabel || 'Aller au TDR')} <span aria-hidden="true">→</span></a>
   </div>
 </section>` : ''}
 
