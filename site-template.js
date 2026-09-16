@@ -38,19 +38,33 @@ window.AIL4C = (function(){
   <button class="menu-btn" id="menuBtn" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
 </header>
 
-${d.jaa && d.jaa.enabled !== false ? `
-<section class="jaa-announcement" aria-label="${esc(d.jaa.flashAriaLabel || 'Flash info — appel à candidature JAA')}" role="link" tabindex="0" data-jaa-flash-link="${esc(d.jaa.flashButtonUrl || '#jaa-tdr')}">
+${(() => {
+  const j = d.jaa || {};
+  const msgs = Array.isArray(j.flashMessages) && j.flashMessages.length ? j.flashMessages : [
+    'APPEL À CANDIDATURE — Projet Jeunesse Africaine en Action (JAA)',
+    "ONG-AIL4C recherche des jeunes candidats pour rejoindre l'équipe de pré-réflexion JAA.",
+    'Consultez les Termes de Référence et postulez en ligne.',
+    'Date limite : 02 octobre 2026.'
+  ];
+  if (j.enabled === false) return '';
+  const target = j.flashButtonUrl || '#jaa-tdr';
+  return `
+<a class="jaa-announcement" href="${esc(target)}" aria-label="${esc(j.flashAriaLabel || 'Flash info — appel à candidature JAA')}">
   <div class="jaa-flash-inner">
-    <div class="jaa-flash-label">${esc(d.jaa.flashLabel || 'FLASH INFO')}</div>
+    <div class="jaa-flash-bell" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 21h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    <div class="jaa-flash-label">${esc(j.flashLabel || 'FLASH INFO')}</div>
     <div class="jaa-flash-track" aria-live="polite">
       <div class="jaa-flash-marquee">
-        ${(d.jaa.flashMessages || []).map(m => `<span>${esc(m)}</span>`).join('')}
-        ${(d.jaa.flashMessages || []).map(m => `<span aria-hidden="true">${esc(m)}</span>`).join('')}
+        <div class="jaa-flash-group">${msgs.map(m => `<span>${esc(m)}</span>`).join('<b class="jaa-flash-sep" aria-hidden="true">•</b>')}</div>
+        <div class="jaa-flash-group" aria-hidden="true">${msgs.map(m => `<span>${esc(m)}</span>`).join('<b class="jaa-flash-sep" aria-hidden="true">•</b>')}</div>
       </div>
     </div>
-    <a href="${esc(d.jaa.flashButtonUrl || '#jaa-tdr')}" class="jaa-flash-btn">${esc(d.jaa.flashButtonLabel || 'Aller au TDR')} <span aria-hidden="true">→</span></a>
+    <div class="jaa-flash-btn">${esc(j.flashButtonLabel || 'Voir')} <span aria-hidden="true">→</span></div>
   </div>
-</section>` : ''}
+</a>`;
+})()}
 
 <nav class="sidenav" id="sidenav" aria-label="Navigation principale">
   <div class="sidenav-head">

@@ -276,34 +276,42 @@ footer a:hover{opacity:1;}
   .card,.sidenav{transition:none;}
 }
 
-/* --- JAA flash info / TDR actions --- */
-.jaa-announcement{margin:0;background:var(--forest);color:#fff;border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12);overflow:hidden;}
-.jaa-flash-inner{width:100%;display:flex;align-items:stretch;min-height:58px;}
-.jaa-flash-label{flex:0 0 auto;display:flex;align-items:center;padding:0 20px;background:var(--gold);color:#173d2d;font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.12em;white-space:nowrap;z-index:2;}
+/* --- JAA Flash Info : ajout uniquement, structure du site inchangée --- */
+.jaa-announcement{display:block;width:100%;margin:0;background:var(--forest);color:#fff;text-decoration:none;border-top:1px solid rgba(255,255,255,.10);border-bottom:1px solid rgba(229,181,42,.35);overflow:hidden;}
+.jaa-announcement:hover{color:#fff;}
+.jaa-flash-inner{width:100%;min-height:64px;display:flex;align-items:stretch;}
+.jaa-flash-bell{flex:0 0 68px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.14);color:var(--gold);border-right:1px solid rgba(229,181,42,.18);}
+.jaa-flash-bell svg{width:29px;height:29px;}
+.jaa-flash-label{flex:0 0 auto;display:flex;align-items:center;padding:0 18px;color:var(--gold);font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.13em;white-space:nowrap;}
 .jaa-flash-track{flex:1 1 auto;min-width:0;overflow:hidden;display:flex;align-items:center;position:relative;}
-.jaa-flash-marquee{display:flex;align-items:center;gap:52px;width:max-content;white-space:nowrap;padding:0 52px;animation:jaaFlashScroll 28s linear infinite;}
-.jaa-flash-marquee span{font-size:1rem;line-height:1;letter-spacing:.01em;color:rgba(255,255,255,.95);}
-.jaa-flash-marquee span:first-child{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:700;letter-spacing:.1em;color:#e5b52a;}
-.jaa-flash-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:0 23px;background:#fff;color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;border-left:1px solid rgba(255,255,255,.16);transition:background .2s ease,color .2s ease;}
-.jaa-flash-btn:hover{background:var(--gold);color:#173d2d;}
-.jaa-flash-btn span{font-size:1.15em;line-height:1;}
+.jaa-flash-marquee{display:flex;align-items:center;width:max-content;min-width:max-content;animation:jaaFlashScroll 30s linear infinite;will-change:transform;}
+.jaa-flash-group{display:flex;align-items:center;flex:0 0 auto;white-space:nowrap;padding-right:56px;}
+.jaa-flash-group span{font-size:1rem;line-height:1.2;color:rgba(255,255,255,.96);font-weight:500;}
+.jaa-flash-group span:first-child{font-weight:800;color:#fff;}
+.jaa-flash-sep{display:inline-block;margin:0 22px;color:var(--gold);font-size:1.15rem;font-weight:700;}
+.jaa-flash-btn{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:10px;min-width:112px;padding:0 22px;background:var(--gold);color:#173d2d;font-weight:800;font-size:.95rem;white-space:nowrap;border-left:1px solid rgba(255,255,255,.14);}
+.jaa-flash-btn span{font-size:1.2em;line-height:1;}
 @keyframes jaaFlashScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.jaa-announcement:hover .jaa-flash-marquee{animation-play-state:paused;}
 @media (prefers-reduced-motion:reduce){.jaa-flash-marquee{animation:none;transform:none;}}
 .tdr-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;}
 .tdr-actions .btn{display:inline-flex;align-items:center;justify-content:center;}
 @media (max-width:700px){
-  .jaa-flash-inner{min-height:52px;}
-  .jaa-flash-label{padding:0 12px;font-size:.64rem;letter-spacing:.08em;}
-  .jaa-flash-marquee{gap:34px;padding:0 34px;animation-duration:24s;}
-  .jaa-flash-marquee span{font-size:.9rem;}
-  .jaa-flash-marquee span:first-child{font-size:.66rem;}
-  .jaa-flash-btn{padding:0 15px;font-size:.82rem;}
+  .jaa-flash-inner{min-height:54px;}
+  .jaa-flash-bell{flex:0 0 52px;}
+  .jaa-flash-bell svg{width:23px;height:23px;}
+  .jaa-flash-label{padding:0 12px;font-size:.62rem;letter-spacing:.08em;}
+  .jaa-flash-group{padding-right:40px;}
+  .jaa-flash-group span{font-size:.88rem;}
+  .jaa-flash-sep{margin:0 15px;}
+  .jaa-flash-btn{min-width:78px;padding:0 12px;font-size:.8rem;}
+  .jaa-flash-btn span{font-size:1em;}
   .tdr-actions{flex-direction:column;}
   .tdr-actions .btn{width:100%;}
 }
 @media (max-width:430px){
-  .jaa-flash-label{padding:0 9px;font-size:.58rem;}
-  .jaa-flash-btn{padding:0 11px;font-size:.76rem;}
+  .jaa-flash-bell{display:none;}
+  .jaa-flash-label{padding:0 9px;font-size:.57rem;}
+  .jaa-flash-btn{min-width:64px;padding:0 9px;font-size:.74rem;}
   .jaa-flash-btn span{display:none;}
-  .jaa-flash-marquee{gap:28px;padding:0 28px;}
 }
