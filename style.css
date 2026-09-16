@@ -275,3 +275,19 @@ footer a:hover{opacity:1;}
   html{scroll-behavior:auto;}
   .card,.sidenav{transition:none;}
 }
+
+/* --- JAA announcement & TDR actions --- */
+.jaa-announcement{margin:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--forest);color:#fff;}
+.jaa-announcement-inner{display:flex;align-items:center;justify-content:space-between;gap:28px;padding:22px 0;}
+.jaa-announcement-label{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;font-weight:600;padding:5px 9px;border:1px solid rgba(255,255,255,.35);margin-bottom:9px;}
+.jaa-announcement h2{margin:0 0 7px;font-size:clamp(1.2rem,2.4vw,1.75rem);color:#fff;}
+.jaa-announcement p{margin:0;max-width:850px;color:rgba(255,255,255,.86);line-height:1.6;}
+.jaa-announcement .btn{flex:0 0 auto;white-space:nowrap;}
+.tdr-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;}
+.tdr-actions .btn{display:inline-flex;align-items:center;justify-content:center;}
+@media (max-width:700px){
+  .jaa-announcement-inner{align-items:flex-start;flex-direction:column;gap:16px;padding:20px 0;}
+  .jaa-announcement .btn{width:100%;}
+  .tdr-actions{flex-direction:column;}
+  .tdr-actions .btn{width:100%;}
+}

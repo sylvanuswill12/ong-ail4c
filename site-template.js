@@ -38,6 +38,17 @@ window.AIL4C = (function(){
   <button class="menu-btn" id="menuBtn" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
 </header>
 
+<section class="jaa-announcement" aria-labelledby="jaa-announcement-title">
+  <div class="wrap jaa-announcement-inner">
+    <div>
+      <span class="jaa-announcement-label">APPEL À CANDIDATURE</span>
+      <h2 id="jaa-announcement-title">Le projet Jeunesse Africaine en Action (JAA) est en cours</h2>
+      <p>ONG-AIL4C recherche des jeunes candidats pour rejoindre l'équipe de pré-réflexion du projet JAA. Découvrez d'abord les Termes de Référence, puis postulez en ligne.</p>
+    </div>
+    <a href="#jaa-tdr" class="btn btn-gold">Lire le TDR</a>
+  </div>
+</section>
+
 <nav class="sidenav" id="sidenav" aria-label="Navigation principale">
   <div class="sidenav-head">
     <strong class="mono" style="letter-spacing:.1em;font-size:.8rem;">MENU</strong>
@@ -324,8 +335,11 @@ window.AIL4C = (function(){
     <div class="tdr-apply">
       <p class="eyebrow">Candidature</p>
       <h3>Vous avez lu le TDR et souhaitez rejoindre l'équipe de pré-réflexion JAA ?</h3>
-      <p>Après avoir pris connaissance des présents Termes de Référence, vous pouvez soumettre votre candidature en ligne via le formulaire dédié.</p>
-      <a class="btn btn-gold" href="https://docs.google.com/forms/d/e/1FAIpQLSclv5CvDV1KwAAD9DVQW74eeeT9Dd5H7VeUL9EUY6a0_ZQfXQ/viewform?usp=header" target="_blank" rel="noopener noreferrer">Je souhaite postuler</a>
+      <p>Après avoir pris connaissance des présents Termes de Référence, vous pouvez choisir de télécharger le document ou de soumettre votre candidature en ligne.</p>
+      <div class="tdr-actions">
+        <a class="btn btn-gold" href="https://docs.google.com/forms/d/e/1FAIpQLSclv5CvDV1KwAAD9DVQW74eeeT9Dd5H7VeUL9EUY6a0_ZQfXQ/viewform?usp=header" target="_blank" rel="noopener noreferrer">Je souhaite postuler</a>
+        <a class="btn btn-outline" href="TDR_Recrutement_Equipe_Pre-Reflexion_JAA.pdf" download>Télécharger le TDR (PDF)</a>
+      </div>
       <div class="tdr-deadline">Date limite : <strong>02 octobre 2026</strong></div>
     </div>
   </div>
